@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                    Int            @id @default(autoincrement())
+  email                 String         @unique
+  name                  String
+  password              String
+  avatar                String?
+  bio                   String?
+  socials               Json?
+  createdAt             DateTime       @default(now())
+  post                  Post[]
+  comments              Comment[]
+  likes                 Like[]
+  followers             Follow[]       @relation("Follower")
+  following             Follow[]       @relation("Following")
+  sentNotifications     Notification[] @relation("NotificationSender")
+  receivedNotifications Notification[]
+  bookmarkLists         BookmarkList[]
+  bookmarks             BookmarkItem[]
+  readHistory           ReadHistory[]
+}
+
+model Post {
+  id                Int            @id @default(autoincrement())
+  title             String
+  content           String
+  previewImage      String?
+  category          String         @default("World")
+  tags              String[]       @default([])
+  status            PostStatus     @default(PUBLISHED)
+  visibility        PostVisibility @default(PUBLIC)
+  publishAt         DateTime       @default(now())
+  userid            Int
+  createdAt         DateTime       @default(now())
+  user              User           @relation(fields: [userid], references: [id], onDelete: Cascade)
+  postComments      Comment[]
+  postLikes         Like[]
+  postNotifications Notification[]
+  bookmarkItems     BookmarkItem[]
+  readHistoryItems  ReadHistory[]
+
+  @@unique([userid, title])
+}
+
+enum PostVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model ReadHistory {
+  id         Int      @id @default(autoincrement())
+  userid     Int
+  postid     Int
+  lastReadAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postid], references: [id], onDelete: Cascade)
+
+  @@unique([userid, postid])
+  @@index([userid, lastReadAt])
+}
+
+model BookmarkList {
+  id        Int            @id @default(autoincrement())
+  name      String
+  userid    Int
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userid], references: [id], onDelete: Cascade)
+  items     BookmarkItem[]
+
+  @@unique([userid, name])
+}
+
+model BookmarkItem {
+  id        Int          @id @default(autoincrement())
+  userid    Int
+  listid    Int
+  postid    Int
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userid], references: [id], onDelete: Cascade)
+  list      BookmarkList @relation(fields: [listid], references: [id], onDelete: Cascade)
+  post      Post         @relation(fields: [postid], references: [id], onDelete: Cascade)
+
+  @@unique([listid, postid])
+  @@index([userid])
+}
+
+model Comment {
+  id                   Int            @id @default(autoincrement())
+  content              String
+  postid               Int
+  userid               Int
+  parentid             Int?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  post                 Post           @relation(fields: [postid], references: [id], onDelete: Cascade)
+  user                 User           @relation(fields: [userid], references: [id], onDelete: Cascade)
+  parent               Comment?       @relation("CommentReplies", fields: [parentid], references: [id])
+  replies              Comment[]      @relation("CommentReplies")
+  commentNotifications Notification[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  postid    Int
+  userid    Int
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postid], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+
+  @@unique([postid, userid])
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerid  Int
+  followingid Int
+  createdAt   DateTime @default(now())
+  follower    User     @relation("Follower", fields: [followerid], references: [id], onDelete: Cascade)
+  following   User     @relation("Following", fields: [followingid], references: [id], onDelete: Cascade)
+
+  @@unique([followerid, followingid])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  postid     Int?
+  commentid  Int?
+  recieverid Int
+  senderid   Int
+  type       String // "like", "comment", "follow"
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  reciever   User     @relation(fields: [recieverid], references: [id], onDelete: Cascade)
+  sender     User     @relation("NotificationSender", fields: [senderid], references: [id], onDelete: Cascade)
+  post       Post?    @relation(fields: [postid], references: [id], onDelete: Cascade)
+  comment    Comment? @relation(fields: [commentid], references: [id], onDelete: Cascade)
+}
