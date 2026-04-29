@@ -1,7 +1,8 @@
 # WeBlog
 
 A full-stack blogging platform for publishing long-form posts, discovering content, and building reader-writer communities. WeBlog combines a polished Next.js interface with an Express API, PostgreSQL persistence, Prisma ORM, cookie-based authentication, and Google OAuth.
-Visit Here:- [**WeBlog**]('https://we-blog-production-zbr9.vercel.app/')
+
+Visit Here:- [WeBlog]('https://we-blog-production-zbr9.vercel.app/')
 
 ## Highlights
 
