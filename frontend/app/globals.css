@@ -73,6 +73,9 @@
     offset-distance: 100%;}}}
 
 :root {
+  --font-manrope: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-cormorant: Georgia, "Times New Roman", Times, serif;
+  --font-jetbrains: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   --background: oklch(0.967 0.004 95);
   --foreground: oklch(0.302 0.056 196);
   --card: oklch(0.978 0.003 96);

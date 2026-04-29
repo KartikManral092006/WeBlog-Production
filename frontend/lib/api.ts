@@ -63,6 +63,8 @@ export const authAPI = {
     request<AuthResponse>("/auth/logout", { method: "POST" }),
 
   me: () => request<{ success: boolean; data: User }>("/auth/me"),
+
+  googleLoginUrl: () => `${API_BASE}/auth/google`,
 };
 
 // Blog API

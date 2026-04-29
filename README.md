@@ -1,169 +1,199 @@
 # WeBlog
 
-WeBlog is a full-stack blogging platform built with a Next.js frontend and an Express + Prisma backend.
+A full-stack blogging platform for publishing long-form posts, discovering content, and building reader-writer communities. WeBlog combines a polished Next.js interface with an Express API, PostgreSQL persistence, Prisma ORM, cookie-based authentication, and Google OAuth.
 
-The app supports:
-- Authentication with cookie-based sessions
-- Writing, editing, publishing, and scheduling posts
-- Public Explore feed and personalized For You feed
-- Likes, comments, bookmarks, and read history
-- Follow system with notifications (including new post notifications from followed users)
-- Profile pages and social links
+## Highlights
+
+- Built a complete blog workflow with create, edit, draft, publish, schedule, and delete support
+- Implemented authentication with JWT HTTP-only cookies and Google OAuth redirects
+- Added personalized feeds, public exploration, topic filtering, and post categorization
+- Supported engagement features including likes, comments, bookmarks, follows, read history, and notifications
+- Designed profile pages with avatar, bio, and social link management
+- Containerized the frontend and backend with Docker Compose for repeatable local setup
 
 ## Tech Stack
 
-- Frontend: Next.js (App Router), React, TypeScript, Tailwind CSS
-- Backend: Express, Prisma ORM, PostgreSQL
-- Auth: JWT in HTTP-only cookies
+- Frontend: Next.js App Router, React, TypeScript, Tailwind CSS, shadcn-style components
+- Backend: Node.js, Express, Prisma ORM
+- Database: PostgreSQL, with support for Neon or local Postgres
+- Auth: JWT sessions in HTTP-only cookies, Google OAuth 2.0
+- Tooling: Docker Compose, npm, Prisma Client
 
-## Project Structure
+## Architecture
 
-- frontend: Next.js web app
-- backend: Express API + Prisma schema/client
+```text
+WeBlog
+├── frontend/        Next.js app, UI components, auth context, API client
+├── backend/         Express API, route handlers, controllers, services
+├── backend/prisma/  Prisma schema and database models
+└── docker-compose.yml
+```
 
-## Prerequisites
+The frontend talks to the backend through `/api/v1` routes. In Docker, Next.js rewrites API requests to the backend service. Authentication is stored in secure HTTP-only cookies, keeping session tokens out of client-side JavaScript.
+
+## Features
+
+### Authentication
+
+- Email/password registration and login
+- Google OAuth sign-in
+- Persistent sessions with JWT cookies
+- Authenticated `/me` endpoint for session restore
+
+### Writing
+
+- Rich blog editor
+- Draft and published post states
+- Private and public visibility
+- Scheduled publishing fields
+- Preview image support
+
+### Discovery
+
+- Explore feed
+- Personalized For You feed
+- Topic and search-based browsing
+- Content preview cards
+
+### Community
+
+- Likes and comments
+- Bookmark lists
+- Follow and unfollow authors
+- Notifications for relevant activity
+- Reading history
+
+## Local Setup
+
+### Prerequisites
 
 - Node.js 20+
 - npm 10+
-- PostgreSQL database (Neon or local)
-- Docker Desktop (for containerized run)
+- PostgreSQL database, either local or hosted
+- Docker Desktop, optional but recommended
 
-## Environment Variables
+### Environment Variables
 
-Create environment files before running:
+Create `backend/.env`:
 
-- backend/.env
-- frontend/.env.local (optional, if you want a custom API base URL)
+```env
+PORT=8080
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
+DIRECT_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
+JWT_SECRET=replace-with-a-strong-secret
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://localhost:8080
+COOKIE_SECURE=false
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_OAUTH_REDIRECT_URL=http://localhost:8080/api/v1/auth/google/callback
+```
 
-Typical backend variables include:
-- DATABASE_URL
-- DIRECT_URL
-- JWT_SECRET
-- PORT (optional, defaults to 8080)
-- FRONTEND_URL (for CORS, usually http://localhost:3000)
+Optional `frontend/.env.local`:
 
-Typical frontend variable:
-- NEXT_PUBLIC_API_BASE_PATH (optional, defaults to /api/v1)
+```env
+NEXT_PUBLIC_API_BASE_PATH=/api/v1
+```
 
-## Installation
+For Google OAuth, add this redirect URI in Google Cloud Console:
 
-Install backend dependencies:
+```text
+http://localhost:8080/api/v1/auth/google/callback
+```
+
+### Install Dependencies
 
 ```bash
 cd backend
 npm install
-```
 
-Install frontend dependencies:
-
-```bash
 cd ../frontend
 npm install
 ```
 
-## Prisma Setup
+### Database Setup
 
-From backend:
+From `backend/`:
 
 ```bash
-cd backend
 npx prisma generate
 npx prisma db push
 ```
 
-## Run in Development
+### Run Without Docker
 
-Start backend:
+Start the backend:
 
 ```bash
 cd backend
 npm run dev
 ```
 
-Start frontend in another terminal:
+Start the frontend in another terminal:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-App URLs:
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8080
+Open:
 
-## Run with Docker
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8080`
 
-You can run the app with Docker Compose.
+### Run With Docker
 
-Current default Docker setup:
-- `backend` reads env from `backend/.env`
-- `frontend` proxies API calls to `backend`
-- Database is expected from `backend/.env` (Neon by default)
-- Local Postgres container is optional via profile `localdb`
-
-### 1) Build and start
-
-From project root:
+From the repository root:
 
 ```bash
 docker compose up --build -d
 ```
 
 This starts:
-- `backend` (Express + Prisma)
-- `frontend` (Next.js)
 
-### 2) Open the app
+- `weblog-frontend` on `http://localhost:3000`
+- `weblog-backend` on `http://localhost:8080`
 
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8080
-
-### 3) Stop containers
+Stop services:
 
 ```bash
 docker compose down
 ```
 
-## Optional: run local Postgres container
+### Optional Local Postgres
 
-If you want the Docker Postgres service too:
+Start the bundled Postgres service:
 
 ```bash
 docker compose --profile localdb up -d db
 ```
 
-If backend should use local Docker Postgres instead of Neon, set these in `backend/.env`:
+Use this database URL in `backend/.env` when running inside Docker:
 
 ```env
 DATABASE_URL=postgresql://weblog:weblog@db:5432/weblog
 DIRECT_URL=postgresql://weblog:weblog@db:5432/weblog
 ```
 
-Then start app services:
+Then start the app:
 
 ```bash
 docker compose up --build -d backend frontend
 ```
 
-To remove containers and volumes:
+### Useful Commands
 
 ```bash
-docker compose down -v
+# Backend
+cd backend && npm run dev
+
+# Frontend
+cd frontend && npm run dev
+
+# Frontend production build
+cd frontend && npm run build
+
+# Docker status
+docker compose ps
 ```
 
-## Build for Production
-
-Frontend:
-
-```bash
-cd frontend
-npm run build
-npm start
-```
-
-Backend:
-
-```bash
-cd backend
-npm run dev
-```

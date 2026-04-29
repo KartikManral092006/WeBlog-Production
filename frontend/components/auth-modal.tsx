@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import { authAPI } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Apple } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface AuthModalProps {
   open: boolean;
@@ -81,6 +82,12 @@ export function AuthModal({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    setError("");
+    setLoading(true);
+    window.location.assign(authAPI.googleLoginUrl());
   };
 
   return (
@@ -188,13 +195,18 @@ export function AuthModal({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button type="button" variant="outline" className="h-11 rounded-lg">
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-11 w-full rounded-lg"
+                      onClick={handleGoogleLogin}
+                      disabled={loading}
+                    >
+                      <span className="mr-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm font-bold text-[#4285f4]">
+                        G
+                      </span>
                       Google
-                    </Button>
-                    <Button type="button" variant="outline" className="h-11 rounded-lg">
-                      <Apple className="mr-2 h-4 w-4" />
-                      Apple
                     </Button>
                   </div>
 

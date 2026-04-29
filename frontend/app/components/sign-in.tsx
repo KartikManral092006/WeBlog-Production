@@ -1,4 +1,26 @@
+"use client";
+
+import { authAPI } from "@/lib/api";
 import { Dispatch, SetStateAction } from "react";
+
+function handleGoogleLogin() {
+  window.location.assign(authAPI.googleLoginUrl());
+}
+
+function GoogleLoginButton() {
+  return (
+    <button
+      type="button"
+      onClick={handleGoogleLogin}
+      className="mt-7 flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-black/15 bg-white px-5 text-sm font-semibold text-black shadow-sm transition hover:bg-black/[0.03]"
+    >
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-base font-bold text-[#4285f4]">
+        G
+      </span>
+      Continue with Google
+    </button>
+  );
+}
 
 export function SignUpModal({ open = true, onClose,activeModal }: { open?: boolean; onClose?: () => void ,activeModal:Dispatch<SetStateAction<"signup" | "signin">>}) {
   if (!open) return null;
@@ -37,7 +59,15 @@ export function SignUpModal({ open = true, onClose,activeModal }: { open?: boole
             Sign up with email
           </h2>
 
-          <form className="mt-4 w-full text-left">
+          <GoogleLoginButton />
+
+          <div className="my-6 flex w-full items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-black/35">
+            <span className="h-px flex-1 bg-black/10" />
+            Or use email
+            <span className="h-px flex-1 bg-black/10" />
+          </div>
+
+          <form className="w-full text-left">
             <div>
               <label className="mb-3 block text-[18px] font-medium text-black" htmlFor="fullName">
                 Your full name
@@ -85,7 +115,7 @@ export function SignUpModal({ open = true, onClose,activeModal }: { open?: boole
 
             <p className="mt-8 text-center text-[18px] text-black">
               Already have an account?{' '}
-              <a href="#" onClick={()=>activeModal("signin")} className="underline underline-offset-2">
+              <a href="#" onClick={(e)=>{e.preventDefault(); activeModal("signin")}} className="underline underline-offset-2">
                 Sign in
               </a>
             </p>
@@ -131,10 +161,18 @@ export function SignInModal({ open = true, onClose,activeModal }: { open?: boole
           </div>
 
           <h2 className="font-serif text-[34px] leading-tight tracking-[-0.03em] text-black sm:text-[48px]">
-            Sign up with email
+            Sign in to WeBlog
           </h2>
 
-          <form className="mt-4 w-full text-left">
+          <GoogleLoginButton />
+
+          <div className="my-6 flex w-full items-center gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-black/35">
+            <span className="h-px flex-1 bg-black/10" />
+            Or use email
+            <span className="h-px flex-1 bg-black/10" />
+          </div>
+
+          <form className="w-full text-left">
 
             <div className="mt-6">
               <label className="mb-3 block text-[18px] font-medium text-black" htmlFor="email">
@@ -171,7 +209,7 @@ export function SignInModal({ open = true, onClose,activeModal }: { open?: boole
 
             <p className="mt-8 text-center text-[18px] text-black">
              Create a new account?{' '}
-              <a href="#" onClick={()=>{activeModal("signup")}} className="underline underline-offset-2">
+              <a href="#" onClick={(e)=>{e.preventDefault(); activeModal("signup")}} className="underline underline-offset-2">
                 Sign up
               </a>
             </p>
@@ -181,4 +219,3 @@ export function SignInModal({ open = true, onClose,activeModal }: { open?: boole
     </div>
   );
 }
-
