@@ -6,7 +6,7 @@ Visit Here:- [WeBlog]('https://we-blog-production-zbr9.vercel.app/')
 
 Flow Diagram :
 
-[![Architecture diagram of kartikmanral092006/weblog-production](https://gitdiagram.com/kartikmanral092006/weblog-production/diagram.png)](https://gitdiagram.com/kartikmanral092006/weblog-production?utm_source=readme&utm_medium=picture)
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/kartikmanral092006/weblog-production?utm_source=readme&utm_medium=badge)
 
 ## Highlights
 
