@@ -4,6 +4,10 @@ A full-stack blogging platform for publishing long-form posts, discovering conte
 
 Visit Here:- [WeBlog]('https://we-blog-production-zbr9.vercel.app/')
 
+Flow Diagram :
+
+[![Architecture diagram of kartikmanral092006/weblog-production](https://gitdiagram.com/kartikmanral092006/weblog-production/diagram.png)](https://gitdiagram.com/kartikmanral092006/weblog-production?utm_source=readme&utm_medium=picture)
+
 ## Highlights
 
 - Built a complete blog workflow with create, edit, draft, publish, schedule, and delete support
